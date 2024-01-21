@@ -28,25 +28,3 @@ class OccupiableStation(Occupiable, Station):
         self.object_type: ObjectType = ObjectType.OCCUPIABLE_STATION
         self.held_item = held_item
         self.occupied_by = occupied_by
-
-    def from_json(self, data: dict) -> Self:
-        from game.quarry_rush.station.ore_occupiable_station import OreOccupiableStation
-
-        super().from_json(data)
-        occupied_by = data['occupied_by']
-        if occupied_by is None:
-            self.occupied_by = None
-            return self
-        # Add all possible game objects that can occupy a tile here (requires python 3.10) 
-        match ObjectType(occupied_by['object_type']):
-            case ObjectType.AVATAR:
-                self.occupied_by: Avatar = Avatar().from_json(occupied_by)
-            case ObjectType.OCCUPIABLE_STATION:
-                self.occupied_by: OccupiableStation = OccupiableStation().from_json(occupied_by)
-            case ObjectType.ORE_OCCUPIABLE_STATION:
-                self.occupied_by: OreOccupiableStation = OreOccupiableStation().from_json(occupied_by)
-            case ObjectType.STATION:
-                self.occupied_by: Station = Station().from_json(occupied_by)
-            case _:
-                raise Exception(f'Could not parse occupied_by: {occupied_by}')
-        return self

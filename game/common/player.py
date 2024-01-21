@@ -104,51 +104,6 @@ class Player(GameObject):
             raise ValueError(f'{self.__class__.__name__}.object_type must be ObjectType')
         self.__object_type = object_type
 
-    def to_json(self):
-        data = super().to_json()
-
-        data['functional'] = self.functional
-        data['error'] = self.error
-        data['team_name'] = self.team_name
-        data['file_name'] = self.file_name
-        data['actions'] = [act.value for act in self.actions]
-        data['avatar'] = self.avatar.to_json() if self.avatar is not None else None
-
-        return data
-
-    def from_json(self, data):
-        super().from_json(data)
-        self.functional = data['functional']
-        self.error = data['error']
-        self.team_name = data['team_name']
-        self.file_name = data['file_name']
-
-        self.actions: list[ActionType] = [ObjectType(action) for action in data['actions']]
-        avatar: Avatar | None = data['avatar']
-        if avatar is None:
-            self.avatar = None
-            return self
-        # match case for action
-        # match action['object_type']:
-        #     case ObjectType.ACTION:
-        #         self.action = Action().from_json(data['action'])
-        #     case None:
-        #         self.action = None
-        #     case _:  # checks if it is anything else
-        #         raise Exception(f'Could not parse action: {self.action}')
-
-        # match case for avatar
-        match ObjectType(avatar['object_type']):
-            case ObjectType.AVATAR:
-                self.avatar = Avatar().from_json(data['avatar'])
-            case None:
-                self.avatar = None
-            case _:
-                raise Exception(f'Could not parse avatar: {self.avatar}')
-        return self
-        # self.action = Action().from_json(data['action']) if data['action'] is not None else None
-        # self.avatar = Avatar().from_json(data['avatar']) if data['avatar'] is not None else None
-
 # to String
     def __str__(self):
         p = f"""ID: {self.id}

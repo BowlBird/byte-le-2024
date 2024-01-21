@@ -32,34 +32,4 @@ class Station(GameObject):
 
     # InventoryManager added to this method for Byte-le 2024
     def take_action(self, avatar: Avatar, inventory_manager: InventoryManager) -> Item | None:
-        pass
-
-    # json methods
-    def to_json(self) -> dict:
-        data: dict = super().to_json()
-        data['held_item'] = self.held_item.to_json() if self.held_item is not None else None
-
-        return data
-
-    def from_json(self, data: dict) -> Self:
-        super().from_json(data)
-        held_item: dict = data['held_item']
-        if held_item is None:
-            self.held_item = None
-            return self
-
-        # framework match case for from json, can add more object types that can be item
-        match ObjectType(held_item['object_type']):
-            case ObjectType.ITEM:
-                self.held_item: Item = Item().from_json(held_item)
-            case ObjectType.COPIUM:
-                self.held_item: Copium = Copium().from_json(held_item)
-            case ObjectType.TURITE:
-                self.held_item: Turite = Turite().from_json(held_item)
-            case ObjectType.LAMBDIUM:
-                self.held_item: Lambdium = Lambdium().from_json(held_item)
-            case ObjectType.ANCIENT_TECH:
-                self.held_item: AncientTech = AncientTech().from_json(held_item)
-            case _:
-                raise ValueError(f'Could not parse held_item: {held_item}')
-        return self
+        ...

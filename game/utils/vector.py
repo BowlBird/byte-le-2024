@@ -122,20 +122,6 @@ class Vector(GameObject):
         """Returns (x: int, y: int)"""
         return (self.x, self.y)
 
-    def to_json(self) -> dict:
-        data = super().to_json()
-        data['x'] = self.x
-        data['y'] = self.y
-
-        return data
-
-    def from_json(self, data) -> Self:
-        super().from_json(data)
-        self.x = data['x']
-        self.y = data['y']
-
-        return self
-
     def __str__(self) -> str:
         return f"Coordinates: ({self.x}, {self.y})"
 

@@ -26,31 +26,3 @@ class Tile(Occupiable):
     def __init__(self, occupied_by: GameObject = None):
         super().__init__(occupied_by)
         self.object_type: ObjectType = ObjectType.TILE
-
-    def from_json(self, data: dict) -> Self:
-        super().from_json(data)
-        occupied_by: dict | None = data['occupied_by']
-        if occupied_by is None:
-            self.occupied_by = None
-            return self
-        # Add all possible game objects that can occupy a tile here (requires python 3.10) 
-        match ObjectType(occupied_by['object_type']):
-            case ObjectType.AVATAR:
-                self.occupied_by: Avatar = Avatar().from_json(occupied_by)
-            case ObjectType.OCCUPIABLE_STATION:
-                self.occupied_by: OccupiableStation = OccupiableStation().from_json(occupied_by)
-            case ObjectType.ORE_OCCUPIABLE_STATION:
-                # I know it's bad practice, but it's to prevent a circular import
-                from game.quarry_rush.station.ore_occupiable_station import OreOccupiableStation
-                self.occupied_by: OreOccupiableStation = OreOccupiableStation().from_json(occupied_by)
-            case ObjectType.STATION:
-                self.occupied_by: Station = Station().from_json(occupied_by)
-            case ObjectType.WALL:
-                self.occupied_by: Wall = Wall().from_json(occupied_by)
-            case ObjectType.CHURCH_STATION:
-                self.occupied_by: ChurchStation = ChurchStation().from_json(occupied_by)
-            case ObjectType.TURING_STATION:
-                self.occupied_by: TuringStation = TuringStation().from_json(occupied_by)
-            case _:
-                raise ValueError(f'Could not parse occupied_by: {occupied_by}')
-        return self

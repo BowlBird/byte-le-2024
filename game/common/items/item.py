@@ -171,71 +171,7 @@ class Item(GameObject):
         self.__name: str | None = name
 
     def take(self, item: Self) -> Self | None:
-        if item is not None and not isinstance(item, Item):
-            raise ValueError(f'{item.__class__.__name__} is not of type Item.')
-
-        # If the item is None, just return None
-        if item is None:
-            return None
-
-        # If the items don't match, return the given item without modifications
-        if self.object_type != item.object_type:
-            return item
-
-        # If subtracting the given item's quantity from self's quantity is less than 0, raise an error
-        if self.quantity - item.quantity < 0:
-            item.quantity -= self.quantity
-            self.quantity = 0
-            return item
-
-        # Reduce self.quantity
-        self.quantity -= item.quantity
-        item.quantity = 0
-
-        return None
+        ...
 
     def pick_up(self, item: Self) -> Self | None:
-        if item is not None and not isinstance(item, Item):
-            raise ValueError(f'{item.__class__.__name__} is not of type Item.')
-
-        # If the item is None, just return None
-        if item is None:
-            return None
-
-        # If the items don't match, return the given item without modifications
-        if self.object_type != item.object_type:
-            return item
-
-        # If the picked up quantity goes over the stack_size, add to make the quantity equal the stack_size
-        if self.quantity + item.quantity > self.stack_size:
-            item.quantity -= self.stack_size - self.quantity
-            self.quantity: int = self.stack_size
-            return item
-
-        # Add the given item's quantity to the self item
-        self.quantity += item.quantity
-        item.quantity = 0
-
-        return None
-
-    def to_json(self) -> dict:
-        data: dict = super().to_json()
-        data['stack_size'] = self.stack_size
-        data['durability'] = self.durability
-        data['value'] = self.value 
-        data['science_point_value'] = self.science_point_value 
-        data['quantity'] = self.quantity
-        data['position'] = self.position.to_json() if self.position is not None else None
-        data['name'] = self.name
-        return data
-
-    def from_json(self, data: dict) -> Self:
-        super().from_json(data)
-        self.durability: int | None = data['durability']
-        self.stack_size: int = data['stack_size']
-        self.quantity: int = data['quantity']
-        self.science_point_value: int = data['science_point_value']
-        self.value: int = data['value']
-        self.position: Vector | None = None if data['position'] is None else Vector().from_json(data['position'])
-        self.name: str | None = data['name']
-        return self
+        ...

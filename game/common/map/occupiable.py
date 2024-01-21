@@ -187,12 +187,3 @@ class Occupiable(GameObject):
             return next_game_object
 
         return None
-
-    def to_json(self) -> dict:
-        data: dict = super().to_json()
-        data['occupied_by'] = self.occupied_by.to_json() if self.occupied_by is not None else None
-        return data
-
-    def from_json(self, data: dict) -> Self:
-        super().from_json(data)
-        return self

@@ -17,4 +17,4 @@ class OccupiableStationExample(OccupiableStation):
             :param avatar:
             :return:
         """
-        avatar.pick_up(self.held_item)
+        ...
