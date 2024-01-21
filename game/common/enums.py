@@ -1,0 +1,89 @@
+from enum import Enum, auto
+
+"""
+The use of the enum structure is to make is easier to execute certain tasks. It also helps with identifying 
+types of Objects throughout the project. 
+
+When developing the game, add any extra enums as necessary.
+"""
+
+
+class DebugLevel(Enum):
+    NONE = auto()
+    CLIENT = auto()
+    CONTROLLER = auto()
+    ENGINE = auto()
+
+
+class ObjectType(Enum):
+    NONE = auto()  # 1
+    ACTION = auto()  # 2
+    PLAYER = auto()  # 3
+    AVATAR = auto()  # 4
+    GAMEBOARD = auto()  # 5
+    VECTOR = auto()  # 6
+    TILE = auto()  # 7
+    WALL = auto()  # 8
+    ITEM = auto()  # 9
+    ORE = auto()  # 10
+    LAMBDIUM = auto()  # 11
+    TURITE = auto()  # 12
+    COPIUM = auto()  # 13
+    OCCUPIABLE = auto()  # 14
+    ANCIENT_TECH = auto()  # 15
+    STATION = auto()  # 16
+    OCCUPIABLE_STATION = auto()  # 17
+    STATION_EXAMPLE = auto()  # 18
+    STATION_RECEIVER_EXAMPLE = auto()  # 19
+    OCCUPIABLE_STATION_EXAMPLE = auto()  # 20
+    COMPANY_STATION = auto()  # 21
+    CHURCH_STATION = auto()  # 22
+    TURING_STATION = auto()  # 23
+    ACTIVE_ABILITY = auto()  # 24
+    INVENTORY_MANAGER = auto()  # 25
+    LANDMINE_ACTIVE_ABILITY = auto()  # 26
+    EMP_ACTIVE_ABILITY = auto()  # 27
+    DYNAMITE_ACTIVE_ABILITY = auto()  # 28
+    DYNAMITE = auto()  # 29
+    ORE_OCCUPIABLE_STATION = auto()  # 30
+    TRAP = auto()  # 31
+    LANDMINE = auto()  # 32
+    EMP = auto()  # 33
+    TRAP_DEFUSAL_ACTIVE_ABILITY = auto()  # 34
+
+
+class ActionType(Enum):
+    NONE = auto()  # 1
+    MOVE_UP = auto()  # 2
+    MOVE_DOWN = auto()  # 3
+    MOVE_LEFT = auto()  # 4
+    MOVE_RIGHT = auto()  # 5
+    INTERACT_UP = auto()  # 6
+    INTERACT_DOWN = auto()  # 7
+    INTERACT_LEFT = auto()  # 8
+    INTERACT_RIGHT = auto()  # 9
+    INTERACT_CENTER = auto()  # 10
+    PLACE_DYNAMITE = auto()  # 11
+    PLACE_LANDMINE = auto()  # 12
+    PLACE_EMP = auto()  # 13
+    MINE = auto()  # 14
+    DEFUSE_UP = auto()  # 15
+    DEFUSE_DOWN = auto()  # 16
+    DEFUSE_LEFT = auto()  # 17
+    DEFUSE_RIGHT = auto()  # 18
+    BUY_IMPROVED_DRIVETRAIN = auto()  # 19
+    BUY_SUPERIOR_DRIVETRAIN = auto()  # 20
+    BUY_OVERDRIVE_DRIVETRAIN = auto()  # 21
+    BUY_IMPROVED_MINING = auto()  # 22
+    BUY_SUPERIOR_MINING = auto()  # 23
+    BUY_OVERDRIVE_MINING = auto()  # 24
+    BUY_DYNAMITE = auto()  # 25
+    BUY_LANDMINES = auto()  # 26
+    BUY_EMPS = auto()  # 27
+    BUY_TRAP_DEFUSAL = auto()  # 28
+
+
+# Added for Quarry Rush
+class Company(Enum):
+    CHURCH = auto()  # 1
+    TURING = auto()  # 2
