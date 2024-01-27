@@ -6,9 +6,16 @@ from game.utils.vector import Vector
 from game.common.map.tile import Tile
 
 class State(Enum):
-    MINING = auto()
-    SELLING = auto()
-
+    O_MINE = auto() # Goes to center, mines vauluable, mines ainchent tech
+    O_SELL = auto() # pathfind back to home position
+    O_UPGRADE = auto()
+    M_MINE = auto()
+    M_SELL = auto()
+    M_UPGRADE = auto()
+    E_MINE = auto()
+    E_SELL = auto()
+    E_UPGRADE = auto()
+    E_EMP = auto()
 
 class Client(UserClient):
     # Variables and info you want to save between turns go here
@@ -20,7 +27,7 @@ class Client(UserClient):
         Allows the team to set a team name.
         :return: Your team name
         """
-        return 'Unpaid Intern'
+        return 'JOEEEEEE BIDEEEN'
     
     
    
@@ -48,7 +55,14 @@ class Client(UserClient):
         self.company = avatar.company
         self.my_station_type = ObjectType.TURING_STATION if self.company == Company.TURING else ObjectType.CHURCH_STATION
         self.current_state = State.MINING
-        self.base_position = world.get_objects(self.my_station_type)[0][0]   
+        self.base_position = world.get_objects(self.my_station_type)[0][0]
+        self.middle = (7,3) if self.Company == Company.TURING else (6, 9)
+        print("printing goodies")
+        # goodies_list = filter(self.has_goodies, world.get_objects(ObjectType.OCCUPIABLE_STATION))
+        # print(goodies_list)
+        # for tile in goodies_list:
+        #     print("here!")
+        #     print(tile.occupied_by)       
         # Attempted to generate a path between the two points. THIS IS DEBUG RN
         adjacency_list = generate_adjacency_list(world.game_map)
         # print(Graph(adjacency_list).a_star_algorithm((4,1),(7,1)))
@@ -68,49 +82,47 @@ class Client(UserClient):
 
         current_tile = world.game_map[avatar.position.y][avatar.position.x] # set current tile to the tile that I'm standing on
         
-        # If I start the turn on my station, I should...
-        if current_tile.occupied_by.object_type == self.my_station_type:
-            # buy Improved Mining tech if I can...
-            if avatar.science_points >= avatar.get_tech_info('Improved Drivetrain').cost and not avatar.is_researched('Improved Drivetrain'):
-                return [ActionType.BUY_IMPROVED_DRIVETRAIN]
-            # otherwise set my state to mining
-            self.current_state = State.MINING
-            
-        # If I have at least 5 items in my inventory, set my state to selling
-        if len([item for item in self.get_my_inventory(world) if item is not None]) >= 5:
-            self.current_state = State.SELLING
-            
-        # Make action decision for this turn
-        if self.current_state == State.SELLING:
-            # actions = [ActionType.MOVE_LEFT if self.company == Company.TURING else ActionType.MOVE_RIGHT] # If I'm selling, move towards my base
-            actions = self.generate_moves(avatar.position, self.base_position, turn % 2 == 0)
-        else:
-            if current_tile.occupied_by.object_type == ObjectType.ORE_OCCUPIABLE_STATION:
-                # If I'm mining and I'm standing on an ore, mine it
-                actions = [ActionType.MINE]
-            else:
-                # If I'm mining and I'm not standing on an ore, move randomly
-                actions = [random.choice([ActionType.MOVE_LEFT, ActionType.MOVE_RIGHT, ActionType.MOVE_UP, ActionType.MOVE_DOWN])]
-                
+        zipped_moves = self.generate_moves(avatar, world, (6, 9))
+
+        match(self.current_state):
+            case State.O_MINE:
+                # Move to middle
+                # Mine nearest Vauluable
+                # End condition: Full Inventory, Enough for next Upgrade
+                pass
+            case State.O_SELL:
+                # Move to starting position
+                # Sell
+                # End condition: Enough for next upgrade -> Upgrade
+                # Else -> O_Mine
+                pass
+            case State.O_UPGRADE:
+                # Buy Improved Mining if have -> O_MINE
+                # Buy Dynamite -> M_SELL
+                pass
+        
+        for move in zipped_moves:
+            if move == (0, 1):
+                actions.append(ActionType.MOVE_UP)
+
+            if move == (1, 0):
+                actions.append(ActionType.MOVE_LEFT)
+
+            if move == (0, -1):
+                actions.append(ActionType.MOVE_DOWN)
+
+            if move == (-1, 0):
+                actions.append(ActionType.MOVE_RIGHT)
         return actions
 
-    def generate_moves(self, start_position, end_position, vertical_first):
-        """
-        This function will generate a path between the start and end position. It does not consider walls and will
-        try to walk directly to the end position.
-        :param start_position:      Position to start at
-        :param end_position:        Position to get to
-        :param vertical_first:      True if the path should be vertical first, False if the path should be horizontal first
-        :return:                    Path represented as a list of ActionType
-        """
-        dx = end_position.x - start_position.x
-        dy = end_position.y - start_position.y
-        
-        horizontal = [ActionType.MOVE_LEFT] * -dx if dx < 0 else [ActionType.MOVE_RIGHT] * dx
-        vertical = [ActionType.MOVE_UP] * -dy if dy < 0 else [ActionType.MOVE_DOWN] * dy
-        
-        return vertical + horizontal if vertical_first else horizontal + vertical
-
+    def generate_moves(self, avatar, world, end_position):
+        adjacency_list = generate_adjacency_list(world.game_map)
+        move_list = Graph(adjacency_list).a_star_algorithm((avatar.position.x, avatar.position.y), end_position)
+        copied_move_list = move_list.copy()
+        copied_move_list.insert(0, (avatar.position.x, avatar.position.y))
+        zipped_moves = list(map(lambda x: (x[1][0] - x[0][0], x[1][1] - x[0][1]), zip(move_list, copied_move_list)))
+        return zipped_moves
+    
     def get_my_inventory(self, world):
         return world.inventory_manager.get_inventory(self.company)
 
