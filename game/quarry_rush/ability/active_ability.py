@@ -57,26 +57,16 @@ class ActiveAbility(GameObject):
 
 # decrease cooldown, decrement cooldown: at the end of each turn it will have to be called for each avatar
     def decrease_fuse(self):
-        self.__fuse -= 1  # calling the getter specifically
-        if self.fuse < 0:
-            self.fuse = 0  # so it cannot be negative
+        ...
 
 # reset cooldown tick: resetting the cooldown tick
     def reset_fuse(self):
-        self.fuse = self.cooldown
+        ...
 
 # to json
     def to_json(self) -> dict:
-        data: dict = super().to_json()
-        data['cooldown'] = self.cooldown
-        data['fuse'] = self.fuse
-        data['is_usable'] = self.is_usable
-        return data
+        ...
 
 # from json
     def from_json(self, data: dict) -> Self:
-        super().from_json(data)
-        self.cooldown = data['cooldown']
-        self.fuse = data['fuse']
-        self.is_usable = data['is_usable']
-        return self
+        ...

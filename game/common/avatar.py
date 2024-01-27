@@ -247,38 +247,31 @@ class Avatar(GameObject):
         self.__abilities = abilities
 
     def is_researched(self, tech_name: str) -> bool:
-        """Returns if the given tech was researched."""
-        return self.__tech_tree.is_researched(tech_name)
+        ...
 
     def get_researched_techs(self) -> list[str]:
-        """Returns the list of researched techs."""
-        return self.__tech_tree.researched_techs()
+        ...
 
     def get_all_tech_names(self) -> list[str]:
-        """Returns a list of all possible tech names in a Tech Tree."""
-        return self.__tech_tree.tech_names()
+        ...
     
     def get_tech_info(self, tech_name: str) -> TechInfo | None:
-        """
-        Returns a TechInfo object about the tech with the given name if the tech is found in the tree.
-        Returns None if the tech isn't found
-        """
-        return self.__tech_tree.tech_info(tech_name)
+        ...
 
     # Dynamite placing functionality ----------------------------------------------------------------------------------
     # if avatar calls place dynamite, set to true, i.e. they want to place dynamite
     def can_place_dynamite(self) -> bool:
-        return self.abilities['Dynamite'] and self.dynamite_active_ability.is_usable
+        ...
 
     def can_place_landmine(self) -> bool:
-        return self.abilities['Landmines'] and self.landmine_active_ability.is_usable
+        ...
 
     def can_place_emp(self) -> bool:
-        return self.abilities['EMPs'] and self.emp_active_ability.is_usable and not self.abilities['Landmines']
+        ...
 
     def can_defuse_trap(self) -> bool:
-        return self.abilities['Trap Defusal'] and self.trap_defusal_active_ability.is_usable
+        ...
 
     # method to return the opposing team based on the avatar's company
     def get_opposing_team(self) -> Company:
-        return Company.CHURCH if self.company is Company.TURING else Company.TURING
+        ...

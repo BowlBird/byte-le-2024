@@ -34,20 +34,13 @@ class CompanyStation(OccupiableStation):
         self.__company = company
 
     def take_action(self, avatar: Avatar, inventory_manager: InventoryManager) -> None:
-        if avatar.company == self.company:
-            points, science = inventory_manager.cash_in_all(self.company)
-            avatar.score += points
-            avatar.science_points += science
+        ...
 
     def to_json(self) -> dict:
-        data: dict = super().to_json()
-        data['company'] = self.company.value
-        return data
+        ...
 
     def from_json(self, data: dict) -> Self:
-        super().from_json(data)
-        self.company: Company = Company(data['company'])
-        return self
+        ...
 
 
 class ChurchStation(CompanyStation):
