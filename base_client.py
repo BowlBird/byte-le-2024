@@ -14,13 +14,15 @@ class Client(UserClient):
     # Variables and info you want to save between turns go here
     def __init__(self):
         super().__init__()
+        # home_base
+        # team_base 
 
     def team_name(self):
         """
         Allows the team to set a team name.
         :return: Your team name
         """
-        return 'The Real Jean'
+        return '42.zip' # Changed the team name to 42.zip, Dylan Cooksley
     
     def first_turn_init(self, world, avatar):
         """
@@ -30,6 +32,7 @@ class Client(UserClient):
         self.my_station_type = ObjectType.TURING_STATION if self.company == Company.TURING else ObjectType.CHURCH_STATION
         self.current_state = State.MINING
         self.base_position = world.get_objects(self.my_station_type)[0][0]
+        
 
     # This is where your AI will decide what to do
     def take_turn(self, turn, actions, world, avatar):
@@ -41,7 +44,7 @@ class Client(UserClient):
         """
         if turn == 1:
             self.first_turn_init(world, avatar)
-            
+        
         current_tile = world.game_map[avatar.position.y][avatar.position.x] # set current tile to the tile that I'm standing on
         
         # If I start the turn on my station, I should...

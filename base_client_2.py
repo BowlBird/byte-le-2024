@@ -4,7 +4,6 @@ from game.client.user_client import UserClient
 from game.common.enums import *
 from game.utils.vector import Vector
 
-
 class State(Enum):
     MINING = auto()
     SELLING = auto()
@@ -22,6 +21,12 @@ class Client(UserClient):
         """
         return 'Unpaid Intern'
     
+    def has_goodies(tile):
+         if (tile.occupied_by):
+            return True
+         else:
+            return False
+    
     def first_turn_init(self, world, avatar):
         """
         This is where you can put setup for things that should happen at the beginning of the first turn
@@ -30,6 +35,14 @@ class Client(UserClient):
         self.my_station_type = ObjectType.TURING_STATION if self.company == Company.TURING else ObjectType.CHURCH_STATION
         self.current_state = State.MINING
         self.base_position = world.get_objects(self.my_station_type)[0][0]
+        print("printing goodies")
+        goodies_list = filter(self.has_goodies, world.get_objects(ObjectType.OCCUPIABLE_STATION))
+        print(goodies_list)
+        # for tile in goodies_list:
+        #     print("here!")
+        #     print(tile.occupied_by)       
+        # Attempted to generate a path between the two points. THIS IS DEBUG RN
+        self.generate_moves_astar(world, Vector(0, 0), Vector(1, 1))
 
     # This is where your AI will decide what to do
     def take_turn(self, turn, actions, world, avatar):
@@ -41,7 +54,7 @@ class Client(UserClient):
         """
         if turn == 1:
             self.first_turn_init(world, avatar)
-            
+
         current_tile = world.game_map[avatar.position.y][avatar.position.x] # set current tile to the tile that I'm standing on
         
         # If I start the turn on my station, I should...
@@ -89,3 +102,93 @@ class Client(UserClient):
 
     def get_my_inventory(self, world):
         return world.inventory_manager.get_inventory(self.company)
+
+    def generate_moves_astar(self, world, start_position, end_position):
+        # Worldmap is a 2d Array
+        a_star = AStar(world.game_map)
+
+# Weighted Graph Stuff
+class weighted_graph:
+    def __init__(self):
+        graph = {}
+        vertices_no = 0
+
+    # Constructs the graph given a 2d array of tile object
+    def construct_from_grid(self, grid):
+        for y in grid:
+            for x in y:
+                self.add_vertex(x)
+
+        #print(graph)
+        
+        for col in range(13):
+            for row in range(13):
+                conversion = col * 14 + row
+                
+                # self.add_edge(graph[conversion - 1]) # Left
+                # self.add_edge(graph[conversion + 1]) # Right
+                # self.add_edge(graph[((col-1) * 14) + row]) # Up
+                # self.add_edge(graph[((col+1) * 14) + row]) # Down
+
+                if(col == 0):
+                    if(row == 0):
+                        # Only do Right and Down
+                        self.add_edge(graph[conversion + 1]) # Right
+
+                    elif(row == 13):
+                        # Do Left Down
+                        pass
+                    else:
+                        # Do Left Right and Down
+                        conversion = col * 14 + row
+                        #self.add_edge() # Left
+                        #self.add_edge() # Right
+                        #self.add_edge() # Down
+
+                elif(col == 13):
+                    pass
+
+
+    def add_vertex(self, v):
+        global graph
+        global vertices_no
+        if v in graph:
+            print("Vertex ", v, " already exists.")
+        else:
+            vertices_no = vertices_no + 1
+            graph[v] = []
+
+        # Add an edge between vertex v1 and v2 with edge weight e
+    def add_edge(self, v1, v2, e):
+        global graph
+        # Check if vertex v1 is a valid vertex
+        if v1 not in graph:
+            print("Vertex ", v1, " does not exist.")
+        # Check if vertex v2 is a valid vertex
+        elif v2 not in graph:
+            print("Vertex ", v2, " does not exist.")
+        else:
+            # Since this code is not restricted to a directed or 
+            # an undirected graph, an edge between v1 v2 does not
+            # imply that an edge exists between v2 and v1
+            temp = [v2, e]
+            graph[v1].append(temp)
+
+    # Print the graph
+    def print_graph(self):
+        global graph
+        for vertex in graph:
+            for edges in graph[vertex]:
+                print(vertex, " -> ", edges[0], " edge weight: ", edges[1])
+
+# ASTAR STUFF
+graph = {}
+vertices_no = 0
+
+#Convert grid2d to graph
+class AStar:
+    def __init__(self, grid):
+        graph = {}
+        weighted = weighted_graph()
+        weighted.construct_from_grid(grid)
+        weighted.print_graph()
