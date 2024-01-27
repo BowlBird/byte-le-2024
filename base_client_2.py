@@ -37,23 +37,14 @@ class Client(UserClient):
     
     def find_ores(self,world,pos):
         ore_tiles = []
-        for i, row in enumerate(world):
-            for y, tile in enumerate(row):
-                if tile.get_occupied_by(ObjectType.ORE_OCCUPIABLE_STATION):
-                    o = tile.occupied_by.occupied_by
-                    oh = tile.occupied_by.held_item
-                    print(o, " ", oh, "\n")
-                    if(o is not ObjectType.AVATAR and 
-                        o is not ObjectType.EMP and
-                        o is not ObjectType.LANDMINE and
-                        o is not ObjectType.DYNAMITE and
-                        ((oh is ObjectType.TURITE) or
-                        (oh is ObjectType.COPIUM) or
-                        (oh is ObjectType.LAMBDIUM) or
-                        (oh is ObjectType.ANCIENT_TECH))):
-                        ore_tiles.append((tile,(i,y)))
-                    print(ore_tiles)
-                
+        for y, row in enumerate(world):
+            for x, tile in enumerate(row):
+                station = tile.get_occupied_by(ObjectType.ORE_OCCUPIABLE_STATION)
+                if station and station.held_item:
+                    if station.occupied_by != ObjectType.DYNAMITE and station.occupied_by != ObjectType.EMP and station.occupied_by != ObjectType.LANDMINE:
+                        if not (station.is_occupied_by_object_type(ObjectType.AVATAR) and (x,y) != pos):
+                            ore_tiles.append((station.held_item, (x,y)))
+        
         distances = list(map(lambda x: numpy.sqrt((pos[0] - x[1][0])**2 + (pos[1] - x[1][1])**2), ore_tiles))
         new_tiles = list(zip(ore_tiles,distances))
         new_tiles = sorted(new_tiles, key=lambda x: x[1])
@@ -111,7 +102,6 @@ class Client(UserClient):
                 else:
                     if(int(nearby_ores[0][2]) == 0):
                         print("Mining")
-                        print(len(nearby_ores), "\n\n\n")
                         actions.append(ActionType.MINE)
                     else:
                         print("Moving")
