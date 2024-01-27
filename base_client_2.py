@@ -6,12 +6,15 @@ from game.utils.vector import Vector
 from game.common.map.tile import Tile
 
 class State(Enum):
-    O_MINE = auto() # Goes to center, mines vauluable, mines ainchent tech
+    O_CENTER = auto() # Goes to center, mines vauluable, mines ainchent tech
+    O_MINE = auto()
     O_SELL = auto() # pathfind back to home position
     O_UPGRADE = auto()
-    M_MINE = auto()
+    M_CENTER = auto() # Goes to center,
+    M_MINE = auto() # Mine Valuable
     M_SELL = auto()
     M_UPGRADE = auto()
+    E_CENTER = auto() # Goes to center, mines vauluable, mines ainchent tech
     E_MINE = auto()
     E_SELL = auto()
     E_UPGRADE = auto()
@@ -37,15 +40,26 @@ class Client(UserClient):
         for i, row in enumerate(world):
             for y, tile in enumerate(row):
                 if tile.get_occupied_by(ObjectType.ORE_OCCUPIABLE_STATION):
-                    ore_tiles.append((tile,(i,y)))
+                    o = tile.occupied_by.occupied_by
+                    oh = tile.occupied_by.held_item
+                    print(o, " ", oh, "\n")
+                    if(o is not ObjectType.AVATAR and 
+                        o is not ObjectType.EMP and
+                        o is not ObjectType.LANDMINE and
+                        o is not ObjectType.DYNAMITE and
+                        ((oh is ObjectType.TURITE) or
+                        (oh is ObjectType.COPIUM) or
+                        (oh is ObjectType.LAMBDIUM) or
+                        (oh is ObjectType.ANCIENT_TECH))):
+                        ore_tiles.append((tile,(i,y)))
+                    print(ore_tiles)
+                
         distances = list(map(lambda x: numpy.sqrt((pos[0] - x[1][0])**2 + (pos[1] - x[1][1])**2), ore_tiles))
-        print("bruh")
-        #print(distances)
         new_tiles = list(zip(ore_tiles,distances))
         new_tiles = sorted(new_tiles, key=lambda x: x[1])
-        new_tiles = list(map(lambda x: x[0],new_tiles))
-        print(new_tiles)
-        return ore_tiles
+        # Tile Object, Position, Distance
+        new_tiles = list(map(lambda x: (x[0][0], x[0][1], x[1]), new_tiles))
+        return new_tiles
 
     
     def first_turn_init(self, world, avatar):
@@ -54,20 +68,10 @@ class Client(UserClient):
         """
         self.company = avatar.company
         self.my_station_type = ObjectType.TURING_STATION if self.company == Company.TURING else ObjectType.CHURCH_STATION
-        self.current_state = State.MINING
+        self.current_state = State.O_CENTER
         self.base_position = world.get_objects(self.my_station_type)[0][0]
-        self.middle = (7,3) if self.Company == Company.TURING else (6, 9)
-        print("printing goodies")
-        # goodies_list = filter(self.has_goodies, world.get_objects(ObjectType.OCCUPIABLE_STATION))
-        # print(goodies_list)
-        # for tile in goodies_list:
-        #     print("here!")
-        #     print(tile.occupied_by)       
-        # Attempted to generate a path between the two points. THIS IS DEBUG RN
-        adjacency_list = generate_adjacency_list(world.game_map)
-        # print(Graph(adjacency_list).a_star_algorithm((4,1),(7,1)))
-        self.find_ores(world.game_map,(13,6))
-        #print(self.find_ores(world.game_map,(13,6)))
+        self.middle = (7,3) if self.company == Company.TURING else (6, 9)
+        self.valuable = ObjectType.TURITE if self.company == Company.TURING else ObjectType.LAMBDIUM
 
     # This is where your AI will decide what to do
     def take_turn(self, turn, actions, world, avatar):
@@ -82,14 +86,37 @@ class Client(UserClient):
 
         current_tile = world.game_map[avatar.position.y][avatar.position.x] # set current tile to the tile that I'm standing on
         
-        zipped_moves = self.generate_moves(avatar, world, (6, 9))
+       
 
         match(self.current_state):
-            case State.O_MINE:
+            case State.O_CENTER:
                 # Move to middle
                 # Mine nearest Vauluable
                 # End condition: Full Inventory, Enough for next Upgrade
-                pass
+                actions = self.generate_moves(avatar, world, self.middle)
+                if((avatar.position.x, avatar.position.y) == self.middle):
+                    self.current_state = State.O_MINE
+            case State.O_MINE:
+                # Find nearest Valuable
+                # if none near, mine copium
+                nearby_ores = self.find_ores(world.game_map, (avatar.position.x, avatar.position.y))
+                close_ores_sorted = list(filter(lambda x: x[2] < 5 and x[0] is self.valuable or x[0] is ObjectType.ANCIENT_TECH, nearby_ores))
+                if(int(len(close_ores_sorted)) != 0):
+                    if(close_ores_sorted[0][2] == 0):
+                        print("Mining")
+                        actions.append(ActionType.MINE)
+                    else:
+                        print("Moving")
+                        actions = self.generate_moves(avatar, world, close_ores_sorted[0][1])
+                else:
+                    if(int(nearby_ores[0][2]) == 0):
+                        print("Mining")
+                        print(len(nearby_ores), "\n\n\n")
+                        actions.append(ActionType.MINE)
+                    else:
+                        print("Moving")
+                        actions = self.generate_moves(avatar, world, nearby_ores[0][1])
+
             case State.O_SELL:
                 # Move to starting position
                 # Sell
@@ -101,6 +128,17 @@ class Client(UserClient):
                 # Buy Dynamite -> M_SELL
                 pass
         
+
+        return actions
+
+    def generate_moves(self, avatar, world, end_position):
+        adjacency_list = generate_adjacency_list(world.game_map)
+        move_list = Graph(adjacency_list).a_star_algorithm((avatar.position.x, avatar.position.y), end_position)
+        copied_move_list = move_list.copy()
+        copied_move_list.insert(0, (avatar.position.x, avatar.position.y))
+        zipped_moves = list(map(lambda x: (x[1][0] - x[0][0], x[1][1] - x[0][1]), zip(move_list, copied_move_list)))
+        actions = []
+
         for move in zipped_moves:
             if move == (0, 1):
                 actions.append(ActionType.MOVE_UP)
@@ -113,15 +151,8 @@ class Client(UserClient):
 
             if move == (-1, 0):
                 actions.append(ActionType.MOVE_RIGHT)
-        return actions
 
-    def generate_moves(self, avatar, world, end_position):
-        adjacency_list = generate_adjacency_list(world.game_map)
-        move_list = Graph(adjacency_list).a_star_algorithm((avatar.position.x, avatar.position.y), end_position)
-        copied_move_list = move_list.copy()
-        copied_move_list.insert(0, (avatar.position.x, avatar.position.y))
-        zipped_moves = list(map(lambda x: (x[1][0] - x[0][0], x[1][1] - x[0][1]), zip(move_list, copied_move_list)))
-        return zipped_moves
+        return actions
     
     def get_my_inventory(self, world):
         return world.inventory_manager.get_inventory(self.company)
