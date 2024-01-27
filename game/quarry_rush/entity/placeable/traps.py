@@ -19,7 +19,8 @@ class Trap(OccupiableStation):
 
     def __init__(self, steal_rate: float = 0.0,
                  owner_company: Company = Company.CHURCH, target_company: Company = Company.TURING,
-                 opponent_position: Callable[[], Vector] = lambda: Vector(), position: Vector = Vector()):
+                 opponent_position: Callable[[], Vector] = lambda: Vector(), position: Vector = Vector(),
+                 range: int = 1):
         super().__init__()
         # rate for stealing items from opposing avatar when trap detonates (if none, pass 0.0)
         self.steal_rate: float = steal_rate
@@ -33,6 +34,8 @@ class Trap(OccupiableStation):
         self.position: Vector = position
         # assigning the object type
         self.object_type: ObjectType = ObjectType.TRAP
+        # the range for detonation of a trap
+        self.range: int = range
 
     @property
     def steal_rate(self) -> float:
@@ -49,6 +52,29 @@ class Trap(OccupiableStation):
     @property
     def opponent_position(self) -> Callable[[], Vector]:
         return self.__opponent_position
+
+
+    @property
+    def position(self) -> Vector:
+        return self.__position
+
+    @property
+    def range(self) -> int:
+        return self.__range
+
+    @position.setter
+    def position(self, position: Vector) -> None:
+        if position is None or not isinstance(position, Vector):
+            raise ValueError(
+                f'{self.__class__.__name__}.position must be a Vector.')
+        self.__position = position
+
+    @range.setter
+    def range(self, range: int) -> None:
+        if range is None or not isinstance(range, int):
+            raise ValueError(
+                f'{self.__class__.__name__}.range must be an int.')
+        self.__range = range
 
     @steal_rate.setter
     def steal_rate(self, steal_rate: float) -> None:
