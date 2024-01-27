@@ -118,7 +118,7 @@ class Vector(GameObject):
         ...
 
     def __str__(self) -> str:
-        return f"Coordinates: ({self.x}, {self.y})"
+        ...
 
     # Stuff added for Byte-le 2024
     
