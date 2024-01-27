@@ -36,12 +36,6 @@ class CompanyStation(OccupiableStation):
     def take_action(self, avatar: Avatar, inventory_manager: InventoryManager) -> None:
         ...
 
-    def to_json(self) -> dict:
-        ...
-
-    def from_json(self, data: dict) -> Self:
-        ...
-
 
 class ChurchStation(CompanyStation):
     """

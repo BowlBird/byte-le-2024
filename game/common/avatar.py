@@ -1,6 +1,6 @@
 from typing import Self
 
-from game.common.enums import ObjectType, Company
+from game.common.enums import ObjectType, Company, Tech
 from game.common.game_object import GameObject
 from game.quarry_rush.ability.emp_active_ability import EMPActiveAbility
 from game.quarry_rush.ability.landmine_active_ability import LandmineActiveAbility
@@ -246,7 +246,7 @@ class Avatar(GameObject):
 
         self.__abilities = abilities
 
-    def is_researched(self, tech_name: str) -> bool:
+    def is_researched(self, tech_name: str | Tech) -> bool:
         ...
 
     def get_researched_techs(self) -> list[str]:
@@ -255,7 +255,7 @@ class Avatar(GameObject):
     def get_all_tech_names(self) -> list[str]:
         ...
     
-    def get_tech_info(self, tech_name: str) -> TechInfo | None:
+    def get_tech_info(self, tech_name: str | Tech) -> TechInfo | None:
         ...
 
     # Dynamite placing functionality ----------------------------------------------------------------------------------

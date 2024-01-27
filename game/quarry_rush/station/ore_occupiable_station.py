@@ -35,12 +35,3 @@ class OreOccupiableStation(OccupiableStation):
     
     def take_action(self, avatar: Avatar, inventory_manager: InventoryManager):
         ...
-
-    def to_json(self) -> dict:
-        ...
-
-    def from_json(self, data: dict) -> Self:
-        ...
-
-
-    

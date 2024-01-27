@@ -19,60 +19,6 @@ from game.quarry_rush.station.company_station import TuringStation, ChurchStatio
 from game.quarry_rush.entity.placeable.traps import EMP, Landmine
 
 
-class TrapQueue(GameObject):
-    def __init__(self):
-        super().__init__()
-        self.__traps: list[Trap] = []
-        self.__max_traps = 10
-
-    def add_trap(self, trap: Trap):
-        ...
-
-    def detonate(self, inventory_manager: InventoryManager, remove_trap_at: Callable[[Vector], None], avatar: Avatar) -> None:
-        ...
-                
-    def dequeue_trap_at(self, position: Vector):
-        ...
-
-    def size(self) -> int:
-        ...
-
-    def to_json(self):
-        ...
-
-    def from_json(self, data: dict) -> Self:
-        ...
-
-
-class DynamiteList(GameObject):
-    """
-    A list for storing dynamite on the game_board. It is different from the TrapQueue because placing dynamite on the
-    map is balanced by the cooldown given by the active ability. There won't be a max size for this.
-    """
-
-    def __init__(self):
-        super().__init__()
-        self.__dynamite_list: list[Dynamite] = []
-
-    def add_dynamite(self, dynamite: Dynamite):
-        ...
-
-    def detonate(self):
-        ...
-
-    def size(self) -> int:
-        ...
-
-    def get_from_list(self, index: int) -> Dynamite:
-        ...
-
-    def to_json(self) -> dict:
-        ...
-
-    def from_json(self, data: dict) -> Self:
-        ...
-
-
 class GameBoard(GameObject):
     """
     `GameBoard Class Notes:`
@@ -189,9 +135,6 @@ class GameBoard(GameObject):
         self.locations: dict | None = locations
         self.walled: bool = walled
         self.inventory_manager: InventoryManager = InventoryManager()
-        self.church_trap_queue = TrapQueue()
-        self.turing_trap_queue = TrapQueue()
-        self.dynamite_list: DynamiteList = DynamiteList()
 
     @property
     def seed(self) -> int:
@@ -268,18 +211,4 @@ class GameBoard(GameObject):
 
 
     def generate_event(self, start: int, end: int) -> None:
-        ...
-
-
-    # removes trap from game_map based on position, method called in trap queue detonate method
-    def remove_trap_at(self, position: Vector) -> None:
-        ...
-
-    def trap_detonation_control(self, avatars: dict[Company, Avatar]) -> None:
-        ...
-
-    def dynamite_detonation_control(self):
-        ...
-        
-    def defuse_trap_at(self, position: Vector) -> None:
         ...

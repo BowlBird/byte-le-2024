@@ -78,11 +78,3 @@ class Dynamite(OccupiableStation):
     # detonate method
     def detonate(self):
         ...
-
-    # to json
-    def to_json(self) -> dict:
-        ...
-
-    # from json
-    def from_json(self, data: dict) -> Self:
-        ...

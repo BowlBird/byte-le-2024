@@ -91,14 +91,6 @@ class Trap(OccupiableStation):
     def detonate(self, inventory_manager: InventoryManager) -> bool:
         ...
 
-    # json methods
-    def to_json(self) -> dict:
-        ...
-
-    def from_json(self, data: dict) -> Self:
-        ...
-
-
 # default classes for Landmine and EMP with existing detection_reduction and steal_rate
 
 class Landmine(Trap):
