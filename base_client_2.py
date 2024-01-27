@@ -20,7 +20,7 @@ class Client(UserClient):
         Allows the team to set a team name.
         :return: Your team name
         """
-        return 'Unpaid Intern'
+        return 'JOE BIDEN'
     
     def has_goodies(tile):
          if (tile.occupied_by):
@@ -43,8 +43,7 @@ class Client(UserClient):
         #     print("here!")
         #     print(tile.occupied_by)       
         # Attempted to generate a path between the two points. THIS IS DEBUG RN
-        adjacency_list = generate_adjacency_list(world.game_map)
-        print(Graph(adjacency_list).a_star_algorithm((4,1),(7,1)))
+
 
     # This is where your AI will decide what to do
     def take_turn(self, turn, actions, world, avatar):
@@ -59,30 +58,25 @@ class Client(UserClient):
 
         current_tile = world.game_map[avatar.position.y][avatar.position.x] # set current tile to the tile that I'm standing on
         
-        # If I start the turn on my station, I should...
-        if current_tile.occupied_by.object_type == self.my_station_type:
-            # buy Improved Mining tech if I can...
-            if avatar.science_points >= avatar.get_tech_info('Improved Drivetrain').cost and not avatar.is_researched('Improved Drivetrain'):
-                return [ActionType.BUY_IMPROVED_DRIVETRAIN]
-            # otherwise set my state to mining
-            self.current_state = State.MINING
-            
-        # If I have at least 5 items in my inventory, set my state to selling
-        if len([item for item in self.get_my_inventory(world) if item is not None]) >= 5:
-            self.current_state = State.SELLING
-            
-        # Make action decision for this turn
-        if self.current_state == State.SELLING:
-            # actions = [ActionType.MOVE_LEFT if self.company == Company.TURING else ActionType.MOVE_RIGHT] # If I'm selling, move towards my base
-            actions = self.generate_moves(avatar.position, self.base_position, turn % 2 == 0)
-        else:
-            if current_tile.occupied_by.object_type == ObjectType.ORE_OCCUPIABLE_STATION:
-                # If I'm mining and I'm standing on an ore, mine it
-                actions = [ActionType.MINE]
-            else:
-                # If I'm mining and I'm not standing on an ore, move randomly
-                actions = [random.choice([ActionType.MOVE_LEFT, ActionType.MOVE_RIGHT, ActionType.MOVE_UP, ActionType.MOVE_DOWN])]
-                
+        adjacency_list = generate_adjacency_list(world.game_map)
+        move_list = Graph(adjacency_list).a_star_algorithm((avatar.position.x, avatar.position.y), (7,1))
+        copied_move_list = move_list.copy()
+        copied_move_list.insert(0, (avatar.position.x, avatar.position.y))
+
+        zipped_moves = list(map(lambda x: (x[1][0] - x[0][0], x[1][1] - x[0][1]), zip(move_list, copied_move_list)))
+        
+        for move in zipped_moves:
+            if move == (0, 1):
+                actions.append(ActionType.MOVE_UP)
+
+            if move == (1, 0):
+                actions.append(ActionType.MOVE_LEFT)
+
+            if move == (0, -1):
+                actions.append(ActionType.MOVE_DOWN)
+
+            if move == (-1, 0):
+                actions.append(ActionType.MOVE_RIGHT)
         return actions
 
     def generate_moves(self, start_position, end_position, vertical_first):
