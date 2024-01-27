@@ -121,33 +121,71 @@ class weighted_graph:
 
         #print(graph)
         
-        for col in range(13):
-            for row in range(13):
-                conversion = col * 14 + row
-                
-                # self.add_edge(graph[conversion - 1]) # Left
-                # self.add_edge(graph[conversion + 1]) # Right
-                # self.add_edge(graph[((col-1) * 14) + row]) # Up
-                # self.add_edge(graph[((col+1) * 14) + row]) # Down
+        for col in range(14):
+            for row in range(14):
+                print(col, " ", row)
+                current_pos = col * 14 + row
+                # Left
+                # self.add_edge(self.get_nth_key(graph, current_pos), self.get_nth_key(graph, current_pos - 1), 1) 
+                # Right
+                # self.add_edge(self.get_nth_key(graph, current_pos), self.get_nth_key(graph, current_pos + 1), 1) 
+                # Up
+                # self.add_edge(self.get_nth_key(graph, current_pos), self.get_nth_key(graph, ((col-1) * 14) + row), 1) 
+                # Down
+                # self.add_edge(self.get_nth_key(graph, current_pos), self.get_nth_key(graph, ((col+1) * 14) + row), 1) 
 
                 if(col == 0):
                     if(row == 0):
+                        #Top Left
                         # Only do Right and Down
-                        self.add_edge(graph[conversion + 1]) # Right
+                        self.add_edge(self.get_nth_key(graph, current_pos), self.get_nth_key(graph, current_pos + 1), 1) # Right
+                        self.add_edge(self.get_nth_key(graph, current_pos), self.get_nth_key(graph, ((col+1) * 14) + row), 1) 
 
                     elif(row == 13):
+                        # Top Right
                         # Do Left Down
-                        pass
+                        self.add_edge(self.get_nth_key(graph, current_pos), self.get_nth_key(graph, current_pos - 1), 1) 
+                        self.add_edge(self.get_nth_key(graph, current_pos), self.get_nth_key(graph, ((col+1) * 14) + row), 1) 
+
                     else:
+                        # First Row
                         # Do Left Right and Down
-                        conversion = col * 14 + row
-                        #self.add_edge() # Left
-                        #self.add_edge() # Right
-                        #self.add_edge() # Down
-
+                        self.add_edge(self.get_nth_key(graph, current_pos), self.get_nth_key(graph, current_pos - 1), 1) 
+                        self.add_edge(self.get_nth_key(graph, current_pos), self.get_nth_key(graph, current_pos + 1), 1) 
+                        self.add_edge(self.get_nth_key(graph, current_pos), self.get_nth_key(graph, ((col+1) * 14) + row), 1) 
                 elif(col == 13):
-                    pass
+                    if(row == 0):
+                        #UP, Right
+                        self.add_edge(self.get_nth_key(graph, current_pos), self.get_nth_key(graph, ((col-1) * 14) + row), 1) 
+                        self.add_edge(self.get_nth_key(graph, current_pos), self.get_nth_key(graph, current_pos + 1), 1) 
 
+                    elif(row == 13):
+                        #Up, LEft
+                        self.add_edge(self.get_nth_key(graph, current_pos), self.get_nth_key(graph, ((col-1) * 14) + row), 1) 
+                        self.add_edge(self.get_nth_key(graph, current_pos), self.get_nth_key(graph, current_pos - 1), 1) 
+                    else:
+                        #Left Right Up
+                        self.add_edge(self.get_nth_key(graph, current_pos), self.get_nth_key(graph, current_pos - 1), 1) 
+                        self.add_edge(self.get_nth_key(graph, current_pos), self.get_nth_key(graph, current_pos + 1), 1) 
+                else:
+                    if(row == 0):
+                        # Up Down Right
+                        self.add_edge(self.get_nth_key(graph, current_pos), self.get_nth_key(graph, ((col-1) * 14) + row), 1) 
+                        self.add_edge(self.get_nth_key(graph, current_pos), self.get_nth_key(graph, ((col+1) * 14) + row), 1) 
+                        self.add_edge(self.get_nth_key(graph, current_pos), self.get_nth_key(graph, current_pos + 1), 1) 
+
+                    elif(row == 13):
+                        #UP Down Left
+                        self.add_edge(self.get_nth_key(graph, current_pos), self.get_nth_key(graph, ((col-1) * 14) + row), 1) 
+                        self.add_edge(self.get_nth_key(graph, current_pos), self.get_nth_key(graph, ((col+1) * 14) + row), 1) 
+                        self.add_edge(self.get_nth_key(graph, current_pos), self.get_nth_key(graph, current_pos - 1), 1) 
+
+                    else:
+                        #Up Down Left Right
+                        self.add_edge(self.get_nth_key(graph, current_pos), self.get_nth_key(graph, ((col-1) * 14) + row), 1) 
+                        self.add_edge(self.get_nth_key(graph, current_pos), self.get_nth_key(graph, ((col+1) * 14) + row), 1) 
+                        self.add_edge(self.get_nth_key(graph, current_pos), self.get_nth_key(graph, current_pos - 1), 1) 
+                        self.add_edge(self.get_nth_key(graph, current_pos), self.get_nth_key(graph, current_pos + 1), 1) 
 
     def add_vertex(self, v):
         global graph
@@ -180,6 +218,14 @@ class weighted_graph:
         for vertex in graph:
             for edges in graph[vertex]:
                 print(vertex, " -> ", edges[0], " edge weight: ", edges[1])
+
+    def get_nth_key(self, dictionary, n=0):
+        if n < 0:
+            n += len(dictionary)
+        for i, key in enumerate(dictionary.keys()):
+            if i == n:
+                return key
+        raise IndexError("dictionary index out of range") 
 
 # ASTAR STUFF
 graph = {}
