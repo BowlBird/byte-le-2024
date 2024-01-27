@@ -19,81 +19,6 @@ from game.quarry_rush.station.company_station import TuringStation, ChurchStatio
 from game.quarry_rush.entity.placeable.traps import EMP, Landmine
 
 
-class TrapQueue(GameObject):
-    def __init__(self):
-        super().__init__()
-        self.__traps: list[Trap] = []
-        self.__max_traps = 10
-
-    def add_trap(self, trap: Trap):
-        if len(self.__traps) >= self.__max_traps:
-            self.__traps = self.__traps[1:]
-        self.__traps += [trap]
-
-    def detonate(self, inventory_manager: InventoryManager, remove_trap_at: Callable[[Vector], None], avatar: Avatar) -> None:
-        for i in range(0, len(self.__traps))[::-1]:
-            if self.__traps[i].detonate(inventory_manager):
-                # call remove trap from game board method
-                remove_trap_at(self.__traps[i].position)
-                # remove trap from list of traps
-                self.__traps: list[Trap] = self.__traps[:i] + self.__traps[i+1:]
-                avatar.state = 'exploding'  # set the state of the avatar for the visualizer
-                
-    def dequeue_trap_at(self, position: Vector):
-        for i in range(0, len(self.__traps))[::-1]:
-            if self.__traps[i].position.x == position.x and self.__traps[i].position.y == position.y:
-                self.__traps: list[Trap] = self.__traps[:1] + self.__traps[i+1:]
-
-    def size(self) -> int:
-        return len(self.__traps)
-
-    def to_json(self):
-        data = super().to_json()
-        data['traps'] = list(map(lambda t: t.to_json(), self.__traps))
-        return data
-
-    def from_json(self, data: dict) -> Self:
-        super().from_json(data)
-        self.__traps = list(map(lambda t: Trap().from_json(t), data['traps']))
-        return self
-
-
-class DynamiteList(GameObject):
-    """
-    A list for storing dynamite on the game_board. It is different from the TrapQueue because placing dynamite on the
-    map is balanced by the cooldown given by the active ability. There won't be a max size for this.
-    """
-
-    def __init__(self):
-        super().__init__()
-        self.__dynamite_list: list[Dynamite] = []
-
-    def add_dynamite(self, dynamite: Dynamite):
-        self.__dynamite_list.append(dynamite)
-
-    def detonate(self):
-        for dynamite in self.__dynamite_list:
-            if dynamite.is_fuse_at_0():
-                self.__dynamite_list.remove(dynamite)
-
-    def size(self) -> int:
-        return len(self.__dynamite_list)
-
-    def get_from_list(self, index: int) -> Dynamite:
-        return self.__dynamite_list[index]
-
-    def to_json(self) -> dict:
-        data: dict = super().to_json()
-        data['dynamite_items'] = list(map(lambda dynamite: dynamite.to_json(), self.__dynamite_list))
-        return data
-
-    def from_json(self, data: dict) -> Self:
-        super().from_json(data)
-        self.__dynamite_list: list[Dynamite] = list(map(lambda d: Dynamite().from_json(d),
-                                                        data['dynamite_items']))
-        return self
-
-
 class GameBoard(GameObject):
     """
     `GameBoard Class Notes:`
@@ -210,9 +135,6 @@ class GameBoard(GameObject):
         self.locations: dict | None = locations
         self.walled: bool = walled
         self.inventory_manager: InventoryManager = InventoryManager()
-        self.church_trap_queue = TrapQueue()
-        self.turing_trap_queue = TrapQueue()
-        self.dynamite_list: DynamiteList = DynamiteList()
 
     @property
     def seed(self) -> int:
@@ -289,23 +211,4 @@ class GameBoard(GameObject):
 
 
     def generate_event(self, start: int, end: int) -> None:
-        self.event_active = random.randint(start, end)
-
-
-    # removes trap from game_map based on position, method called in trap queue detonate method
-    def remove_trap_at(self, position: Vector) -> None:
-        tile: Tile = self.game_map[position.y][position.x]
-        tile.remove_from_occupied_by(ObjectType.LANDMINE)
-        tile.remove_from_occupied_by(ObjectType.EMP)
-
-    def trap_detonation_control(self, avatars: dict[Company, Avatar]) -> None:
-        self.church_trap_queue.detonate(self.inventory_manager, self.remove_trap_at, avatars[Company.TURING])
-        self.turing_trap_queue.detonate(self.inventory_manager, self.remove_trap_at, avatars[Company.CHURCH])
-
-    def dynamite_detonation_control(self):
-        self.dynamite_list.detonate()
-        
-    def defuse_trap_at(self, position: Vector) -> None:
-        self.remove_trap_at(position)
-        self.church_trap_queue.dequeue_trap_at(position)
-        self.turing_trap_queue.dequeue_trap_at(position)
+        ...

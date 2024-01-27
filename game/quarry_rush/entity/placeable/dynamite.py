@@ -70,37 +70,11 @@ class Dynamite(OccupiableStation):
 
 
     def decrement_fuse(self) -> None:
-        self.fuse = max(self.fuse - 1, 0)
-        self.can_explode = True if self.fuse == 0 else False
+        ...
 
     def is_fuse_at_0(self) -> bool:
-        """
-        Reassigns the bool value of can_explode and returns if the dynamite can explode or not
-        """
-        self.can_explode = True if self.fuse == 0 else False
-        return self.can_explode
+        ...
 
     # detonate method
     def detonate(self):
-        self.fuse -= 1
-        if self.fuse <= 0:
-            return True
-        return False
-
-    # to json
-    def to_json(self) -> dict:
-        data: dict = super().to_json()
-        data['position'] = self.position.to_json() if self.position is not None else None
-        data['blast_radius'] = self.blast_radius
-        data['can_explode'] = self.can_explode
-        data['company'] = self.company.value
-        return data
-
-    # from json
-    def from_json(self, data: dict) -> Self:
-        super().from_json(data)
-        self.position: Vector | None = None if data['position'] is None else Vector().from_json(data['position'])
-        self.blast_radius: int = data['blast_radius']
-        self.can_explode: bool = data['can_explode']
-        self.company: Company = Company(data['company'])
-        return self
+        ...
