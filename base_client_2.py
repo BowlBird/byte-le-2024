@@ -1,5 +1,5 @@
 import random
-
+import numpy
 from game.client.user_client import UserClient
 from game.common.enums import *
 from game.utils.vector import Vector
@@ -22,11 +22,24 @@ class Client(UserClient):
         """
         return 'Unpaid Intern'
     
-    def has_goodies(tile):
-         if (tile.occupied_by):
-            return True
-         else:
-            return False
+    
+   
+    
+    def find_ores(self,world,pos):
+        ore_tiles = []
+        for i, row in enumerate(world):
+            for y, tile in enumerate(row):
+                if tile.get_occupied_by(ObjectType.ORE_OCCUPIABLE_STATION):
+                    ore_tiles.append((tile,(i,y)))
+        distances = list(map(lambda x: numpy.sqrt((pos[0] - x[1][0])**2 + (pos[1] - x[1][1])**2), ore_tiles))
+        print("bruh")
+        #print(distances)
+        new_tiles = list(zip(ore_tiles,distances))
+        new_tiles = sorted(new_tiles, key=lambda x: x[1])
+        new_tiles = list(map(lambda x: x[0],new_tiles))
+        print(new_tiles)
+        return ore_tiles
+
     
     def first_turn_init(self, world, avatar):
         """
@@ -35,16 +48,12 @@ class Client(UserClient):
         self.company = avatar.company
         self.my_station_type = ObjectType.TURING_STATION if self.company == Company.TURING else ObjectType.CHURCH_STATION
         self.current_state = State.MINING
-        self.base_position = world.get_objects(self.my_station_type)[0][0]
-        print("printing goodies")
-        # goodies_list = filter(self.has_goodies, world.get_objects(ObjectType.OCCUPIABLE_STATION))
-        # print(goodies_list)
-        # for tile in goodies_list:
-        #     print("here!")
-        #     print(tile.occupied_by)       
+        self.base_position = world.get_objects(self.my_station_type)[0][0]   
         # Attempted to generate a path between the two points. THIS IS DEBUG RN
         adjacency_list = generate_adjacency_list(world.game_map)
-        print(Graph(adjacency_list).a_star_algorithm((4,1),(7,1)))
+        # print(Graph(adjacency_list).a_star_algorithm((4,1),(7,1)))
+        self.find_ores(world.game_map,(13,6))
+        #print(self.find_ores(world.game_map,(13,6)))
 
     # This is where your AI will decide what to do
     def take_turn(self, turn, actions, world, avatar):
