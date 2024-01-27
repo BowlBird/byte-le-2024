@@ -85,41 +85,18 @@ class Trap(OccupiableStation):
 
     # in_range method, checks to see if opposing player is in range of detonating a trap
     def in_range(self) -> bool:
-        # find distance between trap position and opponent_position using method from vector class
-        # if distance is less than or equal to maximum distance, then return True, else, False
-        opponent_position = self.opponent_position()
-        if self.position.distance(opponent_position) <= 0:
-            return True
-        return False
+        ...
 
     # detonation method, calls in_range and steal to detonate trap
     def detonate(self, inventory_manager: InventoryManager) -> bool:
-        # check if opposing player is in range with in_range method
-        # if in_range returns True, run rest of method
-        # use steal method from inventory_manager class
-        # will be removed by game_board if returns True
-        if self.in_range():
-            inventory_manager.steal(self.owner_company, self.target_company, self.steal_rate)
-            return True
-
-        return False
+        ...
 
     # json methods
     def to_json(self) -> dict:
-        data: dict = super().to_json()
-        data['steal_rate'] = self.steal_rate
-        data['owner_company'] = self.owner_company.value
-        data['target_company'] = self.target_company.value
-        data['opponent_position'] = self.opponent_position
-        return data
+        ...
 
     def from_json(self, data: dict) -> Self:
-        super().from_json(data)
-        self.steal_rate: float = data['steal_rate']
-        self.owner_company: Company = Company(data['owner_company'])
-        self.target_company: Company = Company(data['target_company'])
-        self.opponent_position: Callable[[], Vector] = data['opponent_position']
-        return self
+        ...
 
 
 # default classes for Landmine and EMP with existing detection_reduction and steal_rate

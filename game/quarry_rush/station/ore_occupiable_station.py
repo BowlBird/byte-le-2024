@@ -28,69 +28,19 @@ class OreOccupiableStation(OccupiableStation):
         self.held_item = Copium()
 
     def give_item(self, company: Company, inventory_manager: InventoryManager = None, drop_rate: int = 1) -> None:
-        if InventoryManager is None or not isinstance(inventory_manager, InventoryManager):
-            raise ValueError(f'{self.__class__.__name__}.take_action() needs an InventoryManager Object.')
-
-        if drop_rate < 1:
-            raise ValueError(f'{self.__class__.__name__}.give_item() needs a drop rate of at least 1')
-
-        # gives the held item for the amount that is specified by the drop rate passed in
-        for i in range(drop_rate):
-            inventory_manager.give(self.held_item, company, drop_rate)
-
-        if isinstance(self.held_item, Copium):
-            generated_num: float = self.rand.random()
-
-            if generated_num <= self.special_weight / 2:
-                self.held_item = Lambdium()
-            elif generated_num <= self.special_weight:
-                self.held_item = Turite()
-            else:
-                generated_num = self.rand.random()
-
-                if generated_num <= self.ancient_tech_weight:
-                    self.held_item = AncientTech()
-                else:
-                    self.held_item = None
-        elif isinstance(self.held_item, Turite) or isinstance(self.held_item, Lambdium):
-            generated_num = self.rand.random()
-
-            if generated_num <= self.ancient_tech_weight:
-                self.held_item = AncientTech()
-            else:
-                self.held_item = None
-
-        else:
-            self.held_item = None
+        ...
 
     def remove_from_game_board(self, tile: Tile):
-        """
-        By giving a tile object, it will remove this OreOccupiableStation object from it.
-        """
-        if self.held_item is None:
-            tile.remove_from_occupied_by(ObjectType.ORE_OCCUPIABLE_STATION)
+        ...
     
     def take_action(self, avatar: Avatar, inventory_manager: InventoryManager):
-        # The amount of ore received is equal to the avatar's drop rate. Make the change here when mined
-        # Dynamite will not be affected by this, unless necessary for game balancing
-        self.give_item(avatar.company, inventory_manager, avatar.drop_rate)
+        ...
 
     def to_json(self) -> dict:
-        data: dict = super().to_json()
-        data['special_weight'] = self.special_weight
-        data['ancient_tech_weight'] = self.ancient_tech_weight
-        data['seed'] = self.seed
-        data['position'] = self.position.to_json()
-        return data
+        ...
 
     def from_json(self, data: dict) -> Self:
-        super().from_json(data)
-        self.special_weight = data['special_weight']
-        self.ancient_tech_weight = data['ancient_tech_weight']
-        self.seed = data['seed']
-        self.position = Vector().from_json(data['position'])
-        self.rand = random.Random((19 * self.position.x + 23 * self.position.y) * self.seed)
-        return self
+        ...
 
 
     

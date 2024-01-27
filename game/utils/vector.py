@@ -92,46 +92,41 @@ class Vector(GameObject):
 
     @staticmethod
     def add_vectors(vector_1: 'Vector', vector_2: 'Vector') -> 'Vector':
-        new_x: int = vector_1.x + vector_2.x
-        new_y: int = vector_1.y + vector_2.y
-        return Vector(new_x, new_y)
+        ...
     
     @staticmethod
     def from_xy_tuple(xy_tuple: Tuple[int, int]) -> 'Vector':
-        return Vector(*xy_tuple)
+        ...
 
     @staticmethod
     def from_yx_tuple(yx_tuple: Tuple[int, int]) -> 'Vector':
-        return Vector(*yx_tuple[::-1])
+        ...
 
     def add_to_vector(self, other_vector: Self) -> None:
-        self.x += other_vector.x
-        self.y += other_vector.y
+        ...
 
     def add_x_y(self, x: int, y: int) -> None:
-        self.x += x
-        self.y += y
+        ...
 
     def add_x(self, x: int) -> None:
-        self.x += x
+        ...
 
     def add_y(self, y: int) -> None:
-        self.y += y
+        ...
 
     def as_tuple(self) -> Tuple[int, int]:
-        """Returns (x: int, y: int)"""
-        return (self.x, self.y)
+        ...
 
     def __str__(self) -> str:
-        return f"Coordinates: ({self.x}, {self.y})"
+        ...
 
     # Stuff added for Byte-le 2024
     
     def length(self) -> int:
-        return abs(self.x) + abs(self.y)
+        ...
     
     def negative(self) -> Self:
-        return Vector(-self.x, -self.y)
+        ...
     
     def distance(self, other_vector: Vector) -> int:
-        return abs(self.x - other_vector.x) + abs(self.y - other_vector.y)
+        ...
