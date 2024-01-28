@@ -134,8 +134,8 @@ class Client(UserClient):
                     actions.append(ActionType.BUY_IMPROVED_MINING)
                 elif(not avatar.is_researched("Improved Drivetrain") and avatar.science_points >= 80):
                     actions.append(ActionType.BUY_IMPROVED_DRIVETRAIN)
-                elif(not avatar.is_researched("Dynamite") and avatar.science_points >= 70):
-                    actions.append(ActionType.BUY_DYNAMITE)
+                elif(not avatar.is_researched("Superior Mining") and avatar.science_points >= 150):
+                    actions.append(ActionType.BUY_SUPERIOR_MINING)
                 else:
                     self.current_state = State.O_CENTER
         return actions
