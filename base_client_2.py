@@ -30,7 +30,7 @@ class Client(UserClient):
         Allows the team to set a team name.
         :return: Your team name
         """
-        return 'JOEEEEEE BIDEEEN'
+        return 'Client 2'
     
     
    
@@ -82,10 +82,15 @@ class Client(UserClient):
         if(turn - 1 + len(temp_actions)/2 > 192):
             if(turn > 192 and (avatar.position.x, avatar.position.y) == self.tube_pos):
                 actions = []
-                actions.append(ActionType.BUY_DYNAMITE) 
-                actions.append(ActionType.BUY_LANDMINES)
-                actions.append(ActionType.BUY_SUPERIOR_MINING)
-                return actions
+                if(not avatar.is_researched("Dynamite")):
+                    actions.append(ActionType.BUY_DYNAMITE) 
+                    return actions
+                if(not avatar.is_researched("Landmines")):
+                    actions.append(ActionType.BUY_LANDMINES) 
+                    return actions
+                if(not avatar.is_researched("Superior Mining")):
+                    actions.append(ActionType.BUY_SUPERIOR_MINING) 
+                    return actions
             return temp_actions
         
 

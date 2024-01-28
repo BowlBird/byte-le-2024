@@ -30,10 +30,7 @@ class Client(UserClient):
         Allows the team to set a team name.
         :return: Your team name
         """
-        return 'JOEEEEEE BIDEEEN'
-    
-    
-   
+        return 'Client 1'
     
     def find_ores(self,world,pos):
         ore_tiles = []
@@ -79,9 +76,21 @@ class Client(UserClient):
         future_points = len(list(filter(lambda x: x and x.object_type == ObjectType.ANCIENT_TECH, self.get_my_inventory(world)))) * 10 + avatar.science_points
 
         temp_actions = self.generate_moves(avatar, world, (self.base_position.x, self.base_position.y))
-        if(turn - 1 + len(temp_actions)/2 > 197):
+        if(turn - 1 + len(temp_actions)/2 > 192):
+            if(turn > 192 and (avatar.position.x, avatar.position.y) == self.tube_pos):
+                actions = []
+                if(not avatar.is_researched("Dynamite")):
+                    actions.append(ActionType.BUY_DYNAMITE) 
+                    return actions
+                if(not avatar.is_researched("Landmines")):
+                    actions.append(ActionType.BUY_LANDMINES) 
+                    return actions
+                if(not avatar.is_researched("Superior Mining")):
+                    actions.append(ActionType.BUY_SUPERIOR_MINING) 
+                    return actions
             return temp_actions
         
+
         match(self.current_state):
             case State.O_CENTER:
                 # Move to middle
@@ -294,4 +303,3 @@ class Graph:
             open_list.remove(n)
             closed_list.add(n)
         return None
-    
