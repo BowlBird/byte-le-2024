@@ -30,7 +30,7 @@ class Client(UserClient):
         Allows the team to set a team name.
         :return: Your team name
         """
-        return '42.zip'
+        return 'LOBOTAMITE.zip'
     
     def find_ores(self,world,pos):
         ore_tiles = []
@@ -85,8 +85,8 @@ class Client(UserClient):
                 if(not avatar.is_researched("Landmines")):
                     actions.append(ActionType.BUY_LANDMINES) 
                     return actions
-                if(not avatar.is_researched("Superior Mining")):
-                    actions.append(ActionType.BUY_SUPERIOR_MINING) 
+                if(not avatar.is_researched("Superior Drivetrain")):
+                    actions.append(ActionType.BUY_SUPERIOR_DRIVETRAIN) 
                     return actions
             return temp_actions
         
