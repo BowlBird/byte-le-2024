@@ -30,7 +30,7 @@ class Client(UserClient):
         Allows the team to set a team name.
         :return: Your team name
         """
-        return 'Client 1'
+        return '42.zip'
     
     def find_ores(self,world,pos):
         ore_tiles = []
@@ -103,7 +103,7 @@ class Client(UserClient):
                 # Find nearest Valuable
                 # if none near, mine copium
                 nearby_ores = self.find_ores(world.game_map, (avatar.position.x, avatar.position.y))
-                close_ores_sorted = list(filter(lambda x: x[2] < 5 and x[0] is self.valuable or x[0] is ObjectType.ANCIENT_TECH, nearby_ores))
+                close_ores_sorted = list(filter(lambda x: x[2] < 15 and x[0] is self.valuable or x[0] is ObjectType.ANCIENT_TECH, nearby_ores))
                 if(int(len(close_ores_sorted)) != 0):
                     if(close_ores_sorted[0][2] == 0):
                         actions.append(ActionType.MINE)
@@ -115,7 +115,6 @@ class Client(UserClient):
                     else:
                         actions = self.generate_moves(avatar, world, nearby_ores[0][1])
 
-                
                 if(not avatar.is_researched("Improved Mining") and future_points >= 80+50):
                     self.current_state = State.O_SELL
                 if(all(map(lambda x: x != None, self.get_my_inventory(world)))):
@@ -135,6 +134,8 @@ class Client(UserClient):
                     actions.append(ActionType.BUY_IMPROVED_MINING)
                 elif(not avatar.is_researched("Improved Drivetrain") and avatar.science_points >= 80):
                     actions.append(ActionType.BUY_IMPROVED_DRIVETRAIN)
+                elif(not avatar.is_researched("Dynamite") and avatar.science_points >= 70):
+                    actions.append(ActionType.BUY_DYNAMITE)
                 else:
                     self.current_state = State.O_CENTER
         return actions
