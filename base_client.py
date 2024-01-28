@@ -30,17 +30,21 @@ class Client(UserClient):
         Allows the team to set a team name.
         :return: Your team name
         """
-        return 'JOBAMA'
+        return 'JOEEEEEE BIDEEEN'
     
     
    
     
     def find_ores(self,world,pos):
         ore_tiles = []
-        for i, row in enumerate(world):
-            for y, tile in enumerate(row):
-                if tile.get_occupied_by(ObjectType.ORE_OCCUPIABLE_STATION):
-                    ore_tiles.append((tile,(i,y)))
+        for y, row in enumerate(world):
+            for x, tile in enumerate(row):
+                station = tile.get_occupied_by(ObjectType.ORE_OCCUPIABLE_STATION)
+                if station and station.held_item:
+                    if station.occupied_by != ObjectType.DYNAMITE and station.occupied_by != ObjectType.EMP and station.occupied_by != ObjectType.LANDMINE:
+                        if not (station.is_occupied_by_object_type(ObjectType.AVATAR) and (x,y) != pos):
+                            ore_tiles.append((station.held_item, (x,y)))
+        
         distances = list(map(lambda x: numpy.sqrt((pos[0] - x[1][0])**2 + (pos[1] - x[1][1])**2), ore_tiles))
         new_tiles = list(zip(ore_tiles,distances))
         new_tiles = sorted(new_tiles, key=lambda x: x[1])
@@ -57,7 +61,7 @@ class Client(UserClient):
         self.my_station_type = ObjectType.TURING_STATION if self.company == Company.TURING else ObjectType.CHURCH_STATION
         self.current_state = State.O_CENTER
         self.base_position = world.get_objects(self.my_station_type)[0][0]
-        self.middle = (7,3) if self.company == Company.TURING else (6, 9)
+        self.tube_pos = (self.base_position.x, self.base_position.y) #(12,7) if self.company == Company.TURING else (1, 5)
         self.valuable = ObjectType.TURITE if self.company == Company.TURING else ObjectType.LAMBDIUM
 
     # This is where your AI will decide what to do
@@ -72,42 +76,58 @@ class Client(UserClient):
             self.first_turn_init(world, avatar)
 
         current_tile = world.game_map[avatar.position.y][avatar.position.x] # set current tile to the tile that I'm standing on
-        
-       
+        future_points = len(list(filter(lambda x: x and x.object_type == ObjectType.ANCIENT_TECH, self.get_my_inventory(world)))) * 10 + avatar.science_points
 
+        temp_actions = self.generate_moves(avatar, world, (self.base_position.x, self.base_position.y))
+        if(turn - 1 + len(temp_actions)/2 > 197):
+            return temp_actions
+        
         match(self.current_state):
             case State.O_CENTER:
                 # Move to middle
                 # Mine nearest Vauluable
                 # End condition: Full Inventory, Enough for next Upgrade
-                actions = self.generate_moves(avatar, world, self.middle)
+                actions = self.generate_moves(avatar, world, self.tube_pos)
+                if((avatar.position.x, avatar.position.y) == self.tube_pos):
+                    self.current_state = State.O_MINE
             case State.O_MINE:
                 # Find nearest Valuable
                 # if none near, mine copium
                 nearby_ores = self.find_ores(world.game_map, (avatar.position.x, avatar.position.y))
                 close_ores_sorted = list(filter(lambda x: x[2] < 5 and x[0] is self.valuable or x[0] is ObjectType.ANCIENT_TECH, nearby_ores))
-                if(len(close_ores_sorted) != 0):
+                if(int(len(close_ores_sorted)) != 0):
                     if(close_ores_sorted[0][2] == 0):
-                        actions += ActionType.MINE
+                        actions.append(ActionType.MINE)
                     else:
                         actions = self.generate_moves(avatar, world, close_ores_sorted[0][1])
                 else:
-                    if(nearby_ores[0][2] == 0):
-                        actions += ActionType.MINE
-                    actions = self.generate_moves(avatar, world, nearby_ores[0][1])
+                    if(int(nearby_ores[0][2]) == 0):
+                        actions.append(ActionType.MINE)
+                    else:
+                        actions = self.generate_moves(avatar, world, nearby_ores[0][1])
 
+                
+                if(not avatar.is_researched("Improved Mining") and future_points >= 80+50):
+                    self.current_state = State.O_SELL
+                if(all(map(lambda x: x != None, self.get_my_inventory(world)))):
+                    self.current_state = State.O_SELL
             case State.O_SELL:
                 # Move to starting position
                 # Sell
                 # End condition: Enough for next upgrade -> Upgrade
                 # Else -> O_Mine
-                pass
+                actions = self.generate_moves(avatar, world, (self.base_position.x, self.base_position.y))
+                if(self.base_position == avatar.position):
+                    self.current_state = State.O_UPGRADE
             case State.O_UPGRADE:
                 # Buy Improved Mining if have -> O_MINE
                 # Buy Dynamite -> M_SELL
-                pass
-        
-
+                if(not avatar.is_researched("Improved Mining") and avatar.science_points >= 50):
+                    actions.append(ActionType.BUY_IMPROVED_MINING)
+                elif(not avatar.is_researched("Improved Drivetrain") and avatar.science_points >= 80):
+                    actions.append(ActionType.BUY_IMPROVED_DRIVETRAIN)
+                else:
+                    self.current_state = State.O_CENTER
         return actions
 
     def generate_moves(self, avatar, world, end_position):
